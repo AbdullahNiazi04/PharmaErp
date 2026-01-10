@@ -6,4 +6,5 @@ export * from './schemas/raw-materials.schema';
 export * from './schemas/warehouses.schema';
 export * from './schemas/finished-goods.schema';
 export * from './schemas/sales.schema';
+export * from './schemas/hrm.schema';
 

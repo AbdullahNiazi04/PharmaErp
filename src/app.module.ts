@@ -15,9 +15,15 @@ import { FinishedGoodsModule } from './finished-goods/finished-goods.module';
 import { WarehousesModule } from './warehouses/warehouses.module';
 import { CustomersModule } from './customers/customers.module';
 import { SalesModule } from './sales/sales.module';
+import { DepartmentsModule } from './hrm/departments/departments.module';
+import { DesignationsModule } from './hrm/designations/designations.module';
+import { EmployeesModule } from './hrm/employees/employees.module';
+import { AttendanceModule } from './hrm/attendance/attendance.module';
+import { LeavesModule } from './hrm/leaves/leaves.module';
+import { PayrollModule } from './hrm/payroll/payroll.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, VendorsModule, PurchaseRequisitionsModule, PurchaseOrdersModule, GoodsReceiptNotesModule, InvoicesModule, PaymentsModule, RawMaterialsModule, FinishedGoodsModule, WarehousesModule, CustomersModule, SalesModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, VendorsModule, PurchaseRequisitionsModule, PurchaseOrdersModule, GoodsReceiptNotesModule, InvoicesModule, PaymentsModule, RawMaterialsModule, FinishedGoodsModule, WarehousesModule, CustomersModule, SalesModule, DepartmentsModule, DesignationsModule, EmployeesModule, AttendanceModule, LeavesModule, PayrollModule],
   controllers: [AppController],
   providers: [AppService],
 })
