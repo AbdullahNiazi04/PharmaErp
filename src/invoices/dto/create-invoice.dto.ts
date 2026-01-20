@@ -2,9 +2,10 @@ import { IsString, IsDateString, IsEnum, IsOptional, IsNumber, IsUUID } from 'cl
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateInvoiceDto {
-    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsString()
-    invoiceNumber: string;
+    invoiceNumber?: string;
 
     @ApiProperty()
     @IsDateString()

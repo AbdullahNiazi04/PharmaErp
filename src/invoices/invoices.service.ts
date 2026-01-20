@@ -11,8 +11,30 @@ export class InvoicesService {
   constructor(@Inject(DRIZZLE) private db: NodePgDatabase) { }
 
   async create(createDto: CreateInvoiceDto) {
+    let invoiceNumber = createDto.invoiceNumber;
+
+    if (!invoiceNumber) {
+        const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const lastInv = await this.db.select({ invoiceNumber: invoices.invoiceNumber })
+            .from(invoices)
+            .orderBy(sql`${invoices.createdAt} DESC`)
+            .limit(1);
+
+        let nextCount = 1;
+        if (lastInv.length > 0 && lastInv[0].invoiceNumber) {
+            const parts = lastInv[0].invoiceNumber.split('-');
+            if (parts.length === 3) {
+                const lastCount = parseInt(parts[2], 10);
+                if (!isNaN(lastCount)) {
+                    nextCount = lastCount + 1;
+                }
+            }
+        }
+        invoiceNumber = `INV-${dateStr}-${nextCount.toString().padStart(4, '0')}`;
+    }
+
     const [newInvoice] = await this.db.insert(invoices).values({
-      invoiceNumber: createDto.invoiceNumber,
+      invoiceNumber: invoiceNumber,
       invoiceDate: createDto.invoiceDate,
       vendorId: createDto.vendorId,
       poId: createDto.poId,

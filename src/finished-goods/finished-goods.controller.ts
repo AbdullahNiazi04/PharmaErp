@@ -9,16 +9,11 @@ import { ApiTags } from '@nestjs/swagger';
 export class FinishedGoodsController {
   constructor(private readonly finishedGoodsService: FinishedGoodsService) { }
 
+  // === Items CRUD ===
   @Post()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   create(@Body() createDto: CreateFinishedGoodDto) {
     return this.finishedGoodsService.create(createDto);
-  }
-
-  @Post('batches')
-  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  addBatch(@Body() createDto: CreateFinishedGoodBatchDto) {
-    return this.finishedGoodsService.addBatch(createDto);
   }
 
   @Get()
@@ -31,13 +26,43 @@ export class FinishedGoodsController {
     return this.finishedGoodsService.findOne(id);
   }
 
-  @Get(':id/batches')
-  getBatches(@Param('id') id: string) {
-    return this.finishedGoodsService.getBatches(id);
+  @Patch(':id')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  update(@Param('id') id: string, @Body() updateDto: Partial<CreateFinishedGoodDto>) {
+    return this.finishedGoodsService.update(id, updateDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.finishedGoodsService.remove(id);
   }
+
+  // === Batches CRUD ===
+  @Post('batches')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  addBatch(@Body() createDto: CreateFinishedGoodBatchDto) {
+    return this.finishedGoodsService.addBatch(createDto);
+  }
+
+  @Get('batches/all')
+  getAllBatches() {
+    return this.finishedGoodsService.getAllBatches();
+  }
+
+  @Get(':id/batches')
+  getBatches(@Param('id') id: string) {
+    return this.finishedGoodsService.getBatches(id);
+  }
+
+  @Patch('batches/:id')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  updateBatch(@Param('id') id: string, @Body() updateDto: Partial<CreateFinishedGoodBatchDto>) {
+    return this.finishedGoodsService.updateBatch(id, updateDto);
+  }
+
+  @Delete('batches/:id')
+  removeBatch(@Param('id') id: string) {
+    return this.finishedGoodsService.removeBatch(id);
+  }
 }
+

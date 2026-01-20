@@ -56,6 +56,21 @@ export class SalesService {
     return result[0];
   }
 
+  async update(id: string, updateDto: Partial<CreateSalesOrderDto>) {
+    await this.findOne(id);
+    const [updated] = await this.db.update(salesOrders)
+      .set({
+        customerId: updateDto.customerId,
+        orderDate: updateDto.orderDate,
+        deliveryDate: updateDto.deliveryDate,
+        updatedAt: new Date(),
+      })
+      .where(eq(salesOrders.id, id))
+      .returning();
+    return updated;
+  }
+
+
   async createDispatch(orderId: string, warehouseId: string, transporter: string) {
     const [dispatch] = await this.db.insert(dispatches).values({
       salesOrderId: orderId,

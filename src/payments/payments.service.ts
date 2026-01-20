@@ -11,7 +11,12 @@ export class PaymentsService {
   constructor(@Inject(DRIZZLE) private db: NodePgDatabase) { }
 
   async create(createDto: CreatePaymentDto) {
-    // Ideally we should check if invoice exists and verify amounts, but for now simple insert
+    // Check if invoice exists
+    const [invoice] = await this.db.select().from(invoices).where(eq(invoices.id, createDto.invoiceId));
+    if (!invoice) {
+        throw new NotFoundException(`Invoice with ID ${createDto.invoiceId} not found`);
+    }
+
     const [newPayment] = await this.db.insert(payments).values({
       invoiceId: createDto.invoiceId,
       paymentDate: createDto.paymentDate,

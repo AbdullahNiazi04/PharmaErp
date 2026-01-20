@@ -24,7 +24,17 @@ export class CustomersService {
     return result[0];
   }
 
-  // update...
+  async update(id: string, updateDto: Partial<CreateCustomerDto>) {
+    await this.findOne(id);
+    const [updated] = await this.db.update(customers)
+      .set({
+        ...updateDto,
+        updatedAt: new Date(),
+      })
+      .where(eq(customers.id, id))
+      .returning();
+    return updated;
+  }
 
   async remove(id: string) {
     const customer = await this.findOne(id);
@@ -33,8 +43,8 @@ export class CustomersService {
       originalId: id,
       data: customer,
     });
-    // cascade logic if needed
     await this.db.delete(customers).where(eq(customers.id, id));
     return { message: 'Customer moved to trash', id };
   }
 }
+

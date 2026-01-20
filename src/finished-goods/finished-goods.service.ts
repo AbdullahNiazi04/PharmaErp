@@ -10,7 +10,7 @@ import { eq } from 'drizzle-orm';
 export class FinishedGoodsService {
   constructor(@Inject(DRIZZLE) private db: NodePgDatabase) { }
 
-  // --- Items ---
+  // --- Items CRUD ---
   async create(createDto: CreateFinishedGoodDto) {
     const [item] = await this.db.insert(finishedGoodsItems).values({
       itemCode: createDto.itemCode,
@@ -34,7 +34,31 @@ export class FinishedGoodsService {
     return result[0];
   }
 
-  // --- Batches ---
+  async update(id: string, updateDto: Partial<CreateFinishedGoodDto>) {
+    await this.findOne(id);
+    const [updated] = await this.db.update(finishedGoodsItems)
+      .set({
+        ...updateDto,
+        mrp: updateDto.mrp ? updateDto.mrp.toString() : undefined,
+        updatedAt: new Date(),
+      })
+      .where(eq(finishedGoodsItems.id, id))
+      .returning();
+    return updated;
+  }
+
+  async remove(id: string) {
+    const item = await this.findOne(id);
+    await this.db.insert(trash).values({
+      originalTable: 'finished_goods_items',
+      originalId: id,
+      data: item,
+    });
+    await this.db.delete(finishedGoodsItems).where(eq(finishedGoodsItems.id, id));
+    return { message: 'Item moved to trash', id };
+  }
+
+  // --- Batches CRUD ---
   async addBatch(createDto: CreateFinishedGoodBatchDto) {
     const [batch] = await this.db.insert(finishedGoodsBatches).values({
       itemId: createDto.itemId,
@@ -49,19 +73,41 @@ export class FinishedGoodsService {
     return batch;
   }
 
+  async getAllBatches() {
+    return await this.db.select().from(finishedGoodsBatches);
+  }
+
   async getBatches(itemId: string) {
     return await this.db.select().from(finishedGoodsBatches).where(eq(finishedGoodsBatches.itemId, itemId));
   }
 
-  async remove(id: string) {
-    const item = await this.findOne(id);
+  async findOneBatch(id: string) {
+    const result = await this.db.select().from(finishedGoodsBatches).where(eq(finishedGoodsBatches.id, id));
+    if (result.length === 0) throw new NotFoundException(`Batch ${id} not found`);
+    return result[0];
+  }
+
+  async updateBatch(id: string, updateDto: Partial<CreateFinishedGoodBatchDto>) {
+    await this.findOneBatch(id);
+    const [updated] = await this.db.update(finishedGoodsBatches)
+      .set({
+        ...updateDto,
+        updatedAt: new Date(),
+      })
+      .where(eq(finishedGoodsBatches.id, id))
+      .returning();
+    return updated;
+  }
+
+  async removeBatch(id: string) {
+    const batch = await this.findOneBatch(id);
     await this.db.insert(trash).values({
-      originalTable: 'finished_goods_items',
+      originalTable: 'finished_goods_batches',
       originalId: id,
-      data: item,
+      data: batch,
     });
-    // cascade or manual delete
-    await this.db.delete(finishedGoodsItems).where(eq(finishedGoodsItems.id, id));
-    return { message: 'Item moved to trash', id };
+    await this.db.delete(finishedGoodsBatches).where(eq(finishedGoodsBatches.id, id));
+    return { message: 'Batch moved to trash', id };
   }
 }
+

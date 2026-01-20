@@ -25,6 +25,11 @@ export class PurchaseOrdersController {
     return this.purchaseOrdersService.findOne(id);
   }
 
+  @Get('vendor-history/:vendorId')
+  getVendorHistory(@Param('vendorId') vendorId: string) {
+    return this.purchaseOrdersService.getVendorHistory(vendorId);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePurchaseOrderDto: UpdatePurchaseOrderDto) {
     return this.purchaseOrdersService.update(id, updatePurchaseOrderDto);

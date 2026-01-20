@@ -1,9 +1,9 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreatePurchaseRequisitionDto } from './dto/create-purchase-requisition.dto';
 import { UpdatePurchaseRequisitionDto } from './dto/update-purchase-requisition.dto';
 import { DRIZZLE } from '../database/database.module';
 import { NodePgDatabase } from 'drizzle-orm/node-postgres';
-import { purchaseRequisitions, purchaseRequisitionItems, trash } from '../database/schema';
+import { purchaseRequisitions, purchaseRequisitionItems, trash, purchaseOrders } from '../database/schema';
 import { eq, sql } from 'drizzle-orm';
 
 @Injectable()
@@ -77,26 +77,54 @@ export class PurchaseRequisitionsService {
   }
 
   async update(id: string, updateDto: UpdatePurchaseRequisitionDto) {
+    const existingPr = await this.findOne(id);
+    
+    if (existingPr.status === 'Converted') {
+        throw new Error('Cannot edit a converted PR. It has already been processed.');
+    }
+
+    // Logic: If PR was Approved, any edit should reset it to Pending Approval (or Draft) to re-trigger checks.
+    // unless the update is just changing status itself.
+    const newStatus = (existingPr.status === 'Approved' && !updateDto.status) 
+        ? 'Pending Approval' 
+        : updateDto.status || existingPr.status;
+
     const [updated] = await this.db.update(purchaseRequisitions)
-      .set({ ...updateDto, updatedAt: new Date() } as any)
+      .set({ 
+          ...updateDto, 
+          status: newStatus,
+          updatedAt: new Date() 
+      } as any)
       .where(eq(purchaseRequisitions.id, id))
       .returning();
     return updated;
   }
 
   async remove(id: string) {
-    // Soft Delete: Move Header + Items to trash? Or just Header and cascade?
-    // For simplicity, we'll Soft Delete the header, and maybe keep items as is but orphaned (or move strictly header)
+    // 1. Check if PR is linked to any PO
+    const linkedPOs = await this.db.select({ poNumber: purchaseOrders.poNumber })
+        .from(purchaseOrders)
+        .where(eq(purchaseOrders.referencePrId, id));
+
+    if (linkedPOs.length > 0) {
+        throw new BadRequestException(
+            `Cannot delete PR because it is linked to Purchase Order(s): ${linkedPOs.map(p => p.poNumber).join(', ')}`
+        );
+    }
 
     const pr = await this.findOne(id);
 
+    // 2. Archive to trash
     await this.db.insert(trash).values({
       originalTable: 'purchase_requisitions',
       originalId: id,
-      data: pr, // Contains header + items in the JSON
+      data: pr,
     });
 
+    // 3. Delete Items first (FK dependency)
     await this.db.delete(purchaseRequisitionItems).where(eq(purchaseRequisitionItems.prId, id));
+    
+    // 4. Delete Header
     await this.db.delete(purchaseRequisitions).where(eq(purchaseRequisitions.id, id));
 
     return { message: 'PR moved to trash', id };

@@ -24,8 +24,15 @@ export class CustomersController {
     return this.customersService.findOne(id);
   }
 
+  @Patch(':id')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  update(@Param('id') id: string, @Body() updateDto: Partial<CreateCustomerDto>) {
+    return this.customersService.update(id, updateDto);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.customersService.remove(id);
   }
 }
+

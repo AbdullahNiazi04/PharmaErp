@@ -48,9 +48,10 @@ class CreateGoodsReceiptItemDto {
 }
 
 export class CreateGoodsReceiptNoteDto {
-    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsString()
-    grnNumber: string;
+    grnNumber?: string;
 
     @ApiProperty()
     @IsDateString()
@@ -81,10 +82,32 @@ export class CreateGoodsReceiptNoteDto {
     @IsEnum(['Pending', 'Passed', 'Failed', 'Skipped'])
     qcStatus?: 'Pending' | 'Passed' | 'Failed' | 'Skipped';
 
+    @ApiPropertyOptional({ enum: ['Normal', 'Urgent', 'ASAP'] })
+    @IsOptional()
+    @IsEnum(['Normal', 'Urgent', 'ASAP'])
+    urgencyStatus?: 'Normal' | 'Urgent' | 'ASAP';
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsDateString()
+    qcIntimationDate?: string;
+
     @ApiPropertyOptional()
     @IsOptional()
     @IsString()
     qcRemarks?: string;
+    
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    attachments?: string[];
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    importDocuments?: string[];
 
     // Inventory Logic
     @ApiPropertyOptional()

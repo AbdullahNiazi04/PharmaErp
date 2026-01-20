@@ -30,8 +30,15 @@ export class SalesController {
     return this.salesService.findOne(id);
   }
 
+  @Patch(':id')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  update(@Param('id') id: string, @Body() updateDto: Partial<CreateSalesOrderDto>) {
+    return this.salesService.update(id, updateDto);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.salesService.remove(id);
   }
 }
+

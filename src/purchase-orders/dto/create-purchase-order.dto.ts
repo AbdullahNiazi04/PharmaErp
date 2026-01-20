@@ -38,9 +38,10 @@ class CreatePurchaseOrderItemDto {
 }
 
 export class CreatePurchaseOrderDto {
-    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsString()
-    poNumber: string;
+    poNumber?: string;
 
     @ApiProperty()
     @IsDateString()
@@ -64,6 +65,16 @@ export class CreatePurchaseOrderDto {
     @IsOptional()
     @IsString()
     paymentTerms?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsString()
+    termsAndConditions?: string;
+
+    @ApiPropertyOptional({ enum: ['Inclusive', 'Exclusive'] })
+    @IsOptional()
+    @IsEnum(['Inclusive', 'Exclusive'])
+    taxCategory?: 'Inclusive' | 'Exclusive';
 
     @ApiPropertyOptional()
     @IsOptional()

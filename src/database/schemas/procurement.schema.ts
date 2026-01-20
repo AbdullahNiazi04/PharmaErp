@@ -1,5 +1,5 @@
 import { pgTable, uuid, text, boolean, integer, numeric, date, timestamp } from 'drizzle-orm/pg-core';
-import { prPriorityEnum, prStatusEnum, poStatusEnum, qcStatusEnum, grnStatusEnum } from './shared.schema';
+import { prPriorityEnum, prStatusEnum, poStatusEnum, qcStatusEnum, grnStatusEnum, taxCategoryEnum, qcUrgencyEnum } from './shared.schema';
 import { vendors } from './vendors.schema';
 
 // --- PURCHASE REQUISITIONS ---
@@ -44,11 +44,13 @@ export const purchaseOrders = pgTable('purchase_orders', {
     referencePrId: uuid('reference_pr_id').references(() => purchaseRequisitions.id),
     currency: text('currency').default('PKR'),
     paymentTerms: text('payment_terms'),
+    termsAndConditions: text('terms_and_conditions'),
     incoterms: text('incoterms'),
     deliverySchedule: date('delivery_schedule'),
     deliveryLocation: text('delivery_location'),
 
     // Financials
+    taxCategory: taxCategoryEnum('tax_category').default('Exclusive'),
     freightCharges: numeric('freight_charges').default('0'),
     insuranceCharges: numeric('insurance_charges').default('0'),
     subtotal: numeric('subtotal').default('0'),
@@ -85,8 +87,14 @@ export const goodsReceiptNotes = pgTable('goods_receipt_notes', {
 
     // QC & Inventory
     qcRequired: boolean('qc_required').default(false),
+    urgencyStatus: qcUrgencyEnum('urgency_status').default('Normal'),
     qcStatus: qcStatusEnum('qc_status').default('Pending'),
     qcRemarks: text('qc_remarks'),
+    qcIntimationDate: timestamp('qc_intimation_date'),
+    
+    // Attachments / Imports
+    attachments: text('attachments').array(),
+    importDocuments: text('import_documents').array(),
 
     stockPosted: boolean('stock_posted').default(false),
     inventoryLocation: text('inventory_location'),
