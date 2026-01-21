@@ -118,3 +118,12 @@ export const goodsReceiptItems = pgTable('goods_receipt_items', {
     expiryDate: date('expiry_date'),
     storageCondition: text('storage_condition'),
 });
+
+export const procurementOptions = pgTable('procurement_options', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    type: text('type').notNull(), // e.g. 'VENDOR_TYPE', 'DEPARTMENT', 'CATEGORY', 'UOM'
+    label: text('label').notNull(),
+    value: text('value').notNull(), // Usually same as label or slugified
+    isSystem: boolean('is_system').default(false), // To protect base options if needed
+    createdAt: timestamp('created_at').defaultNow(),
+});

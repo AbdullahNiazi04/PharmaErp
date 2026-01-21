@@ -22,8 +22,10 @@ import { AttendanceModule } from './hrm/attendance/attendance.module';
 import { LeavesModule } from './hrm/leaves/leaves.module';
 import { PayrollModule } from './hrm/payroll/payroll.module';
 
+import { ProcurementOptionsModule } from './procurement-options/procurement-options.module';
+
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, VendorsModule, PurchaseRequisitionsModule, PurchaseOrdersModule, GoodsReceiptNotesModule, InvoicesModule, PaymentsModule, RawMaterialsModule, FinishedGoodsModule, WarehousesModule, CustomersModule, SalesModule, DepartmentsModule, DesignationsModule, EmployeesModule, AttendanceModule, LeavesModule, PayrollModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, VendorsModule, PurchaseRequisitionsModule, PurchaseOrdersModule, GoodsReceiptNotesModule, InvoicesModule, PaymentsModule, RawMaterialsModule, FinishedGoodsModule, WarehousesModule, CustomersModule, SalesModule, DepartmentsModule, DesignationsModule, EmployeesModule, AttendanceModule, LeavesModule, PayrollModule, ProcurementOptionsModule],
   controllers: [AppController],
   providers: [AppService],
 })
