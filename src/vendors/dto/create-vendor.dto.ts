@@ -6,10 +6,10 @@ export class CreateVendorDto {
     @IsString()
     legalName: string;
 
-    @ApiPropertyOptional({ enum: ['Raw Material', 'Packaging', 'Services', 'Equipment'] })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsEnum(['Raw Material', 'Packaging', 'Services', 'Equipment'])
-    vendorType?: 'Raw Material' | 'Packaging' | 'Services' | 'Equipment';
+    @IsString()
+    vendorType?: string;
 
     @ApiPropertyOptional()
     @IsOptional()
@@ -97,10 +97,10 @@ export class CreateVendorDto {
     @IsEnum(['Pending', 'Cleared', 'Failed'])
     auditStatus?: 'Pending' | 'Cleared' | 'Failed';
 
-    @ApiPropertyOptional({ enum: ['Low', 'Medium', 'High'] })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsEnum(['Low', 'Medium', 'High'])
-    riskCategory?: 'Low' | 'Medium' | 'High';
+    @IsString()
+    riskCategory?: string;
 
     // Financial
     @ApiPropertyOptional()
@@ -123,10 +123,10 @@ export class CreateVendorDto {
     @IsString()
     currency?: string;
 
-    @ApiPropertyOptional({ enum: ['Net-30', 'Net-60', 'Advanced'] })
+    @ApiPropertyOptional()
     @IsOptional()
-    @IsEnum(['Net-30', 'Net-60', 'Advanced'])
-    paymentTerms?: 'Net-30' | 'Net-60' | 'Advanced';
+    @IsString()
+    paymentTerms?: string;
 
     @ApiPropertyOptional()
     @IsOptional()
