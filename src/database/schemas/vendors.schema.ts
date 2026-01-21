@@ -6,7 +6,7 @@ export const vendors = pgTable('vendors', {
 
     // Basic Info
     legalName: text('legal_name').notNull(),
-    vendorType: vendorTypeEnum('vendor_type'),
+    vendorType: text('vendor_type'),
     businessCategory: text('business_category'),
     registrationNumber: text('registration_number'),
     ntnVatGst: text('ntn_vat_gst'),
@@ -26,14 +26,14 @@ export const vendors = pgTable('vendors', {
     licenseExpiryDate: date('license_expiry_date'),
     qualityRating: integer('quality_rating'), // 1-5
     auditStatus: auditStatusEnum('audit_status').default('Pending'),
-    riskCategory: riskCategoryEnum('risk_category').default('Low'),
+    riskCategory: text('risk_category').default('Low'),
 
     // Financial
     bankName: text('bank_name'),
     accountTitle: text('account_title'),
     accountNumber: text('account_number'),
     currency: text('currency').default('PKR'),
-    paymentTerms: paymentTermsEnum('payment_terms'),
+    paymentTerms: text('payment_terms'),
     creditLimit: numeric('credit_limit'),
     taxWithholdingPercent: numeric('tax_withholding_percent'),
 
